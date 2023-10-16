@@ -42,7 +42,7 @@ ls -lh output_graph
 ### Run a query using the AvantGraph CLI
 
 ```bash
-avantgraph output_graph/ --query-format=cypher query.cypher
+avantgraph output_graph/ --query-type=cypher query.cypher
 ```
 
 ### Start AvantGraph in server mode
