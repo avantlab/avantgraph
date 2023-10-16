@@ -1,23 +1,34 @@
 # AvantGraph - The next-generation graph analytics engine
-> AvantGraph will released under an open license soon.
+> AvantGraph will be released under an open license soon.
 >
 > Until then, you can try out some of the features with the provided docker image.
 
 ## Getting Started
 
+### A note on compatibility
+AvantGraph currently requires the Linux-only `io_uring` API.
+We recommend running it on an x86-64 linux host with a kernel version 5.15 or newer.
+
 ### Pull the docker container
+Make sure you have [installed docker](https://docs.docker.com/engine/install/) and that the daemon is [running](https://docs.docker.com/config/daemon/start/).
+
+AvantGraph is published on our GitHub container registry.
+You can fetch it using the following command:
 
 ```bash
 docker pull ghcr.io/avantgraph/avantgraph:release-2023-10-16
 ```
 
 ### Start the docker container
+Start an instance of the image you have just pulled:
 
 ```bash
 docker run -it --rm \
     -p 127.0.0.1:7687:7687/tcp \
     ghcr.io/avantgraph/avantgraph:release-2023-10-16
 ```
+
+This will open a shell inside the container. 
 
 ### Load a graph
 
@@ -95,7 +106,14 @@ python3 bolt_client.py
 ```
 
 ### Run a graph algorithm
-Stop the running server, and switch to the `karate` graph (comes preloaded):
+AvantGraph supports user-provided graph algorithms written in the [Graphalg language](https://repository.tudelft.nl/islandora/object/uuid%3A1b5f0236-87f2-41f0-8af8-0911cb3b4d54?collection=education).
+
+Below we show how to run a simple triangle counting algorith embedded in a Cypher query.
+
+Move to your terminal window with the running server, and stop it with `Ctrl-C`.
+Start it again, but this time with the `karate` graph.
+This graph comes preloaded inside of the container, so you do not need to use `ag-load-graph`.
+
 ```bash
 ag-server --listen 0.0.0.0:7687 karate/
 ```
@@ -107,9 +125,9 @@ CONTAINER=$(docker ps -f publish=7687 -q)
 docker exec -it $CONTAINER bash -s
 
 python3 bolt_triangle_count.py
-# Expected output:
-# [45]
 ```
+
+The script prints the number of triangles in the graph (45).
 
 If you want to run locally, create `bolt_triangle_count.py` containing:
 
@@ -140,3 +158,6 @@ for record in result:
 ```
 
 And run as `python3 bolt_triangle_count.py`.
+
+In the current release, only a subset of graphalg is supported.
+Important features such as loops are not yet available, and will be added in the coming releases.
