@@ -79,7 +79,7 @@ Suppose the original dataset is not shown as expected, we need to convert it to 
 
 Taking OpenAIRE Graph (https://zenodo.org/record/7490192) as an example, we convert the compressed json files into a format more suitable for AvantGraph. We implement `jq` as the converers, which is a lightweight and flexible command-line JSON processor (https://jqlang.github.io/jq/).
 
-For instance, to convert the `communities_infrastructures.tar` to the suitable format,which includes json.gz files of research communities and research infrastructures, we create the `jq converter` as shown below
+For instance, to convert the `communities_infrastructures.tar` to the suitable format,which includes json.gz files of research communities and research infrastructures, we create the `jq converter` as shown below.
 
 ```json
 {
