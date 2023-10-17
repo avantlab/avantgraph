@@ -32,7 +32,7 @@ This will open a shell inside the container.
 
 ### Load a graph
 
-Before we use the AvantGraph, we can laod graph data using below command, including tool binary (ag-load-graph), graph format (json in this case), file with graph data (fan-in-out.json), and named directory to store the graph data (output_graph)
+Before we use the AvantGraph, we can laod graph data using below command, including tool binary (ag-load-graph), graph format (json in this case), file with graph data (fan-in-out.json), and named directory to store the graph data (output_graph).
 
 ```bash
 ag-load-graph --graph-format=json fan-in-out.json output_graph/
