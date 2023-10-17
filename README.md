@@ -16,7 +16,7 @@ AvantGraph is published on our GitHub container registry.
 You can fetch it using the following command:
 
 ```bash
-docker pull ghcr.io/avantlab/avantgraph:release-2023-10-16
+docker pull ghcr.io/avtlabs/avantgraph:release-2023-10-16
 ```
 
 ### Start the docker container
@@ -25,7 +25,7 @@ Start an instance of the image you have just pulled:
 ```bash
 docker run -it --rm \
     -p 127.0.0.1:7687:7687/tcp \
-    ghcr.io/avantlab/avantgraph:release-2023-10-16
+    ghcr.io/avtlabs/avantgraph:release-2023-10-16
 ```
 
 This will open a shell inside the container. 
