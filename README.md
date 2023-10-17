@@ -32,6 +32,8 @@ This will open a shell inside the container.
 
 ### Load a graph
 
+Before we use the AvantGraph, we can laod graph data using below command, including tool binary (ag-load-graph), graph format (json in this case), file with graph data (fan-in-out.json), and named directory to store the graph data (output_graph).
+
 ```bash
 ag-load-graph --graph-format=json fan-in-out.json output_graph/
 
@@ -41,11 +43,15 @@ ls -lh output_graph
 
 ### Run a query using the AvantGraph CLI
 
+We could also quey a graph using below command, consisting of tool binary (avantgraph), graph repository (output_graph),  query language (cypher in this case) and the file with the query (query.cypher).
+
 ```bash
 avantgraph output_graph/ --query-type=cypher query.cypher
 ```
 
 ### Start AvantGraph in server mode
+
+The ag-server is the tool to start the local server. The graph repository is required to be specified. The listening host and port are also required.
 
 ```bash
 ag-server --listen 0.0.0.0:7687 output_graph/
@@ -62,6 +68,8 @@ docker exec -it $CONTAINER bash -s
 ```
 
 Then, run the provided script:
+
+The bolt_client.py can be edited based on what you want by the bolt client.
 
 ```bash
 python3 bolt_client.py
