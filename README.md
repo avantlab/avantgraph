@@ -16,7 +16,7 @@ AvantGraph is published on our GitHub container registry.
 You can fetch it using the following command:
 
 ```bash
-docker pull ghcr.io/avantlab/avantgraph:release-2023-10-16
+docker pull ghcr.io/avantlab/avantgraph:release-2024-01-31
 ```
 
 ### Start the docker container
@@ -25,10 +25,12 @@ Start an instance of the image you have just pulled:
 ```bash
 docker run -it --rm \
     -p 127.0.0.1:7687:7687/tcp \
-    ghcr.io/avantlab/avantgraph:release-2023-10-16
+    --privileged \
+    ghcr.io/avantlab/avantgraph:release-2024-01-31
 ```
 
-This will open a shell inside the container. 
+This will open a shell inside the container.
+The `--privileged` flag is necessary for `io_uring` support.
 
 ### Load a graph
 
@@ -149,12 +151,15 @@ session = driver.session()
 
 query = """
 WITH ALGORITHM "
-    func TriangleCount(graph: Matrix<int>) -> int {
-        L = select(tril, graph, -1);
-        U = select(triu, graph, 1);
-        C<L, struct> = L (+.one) U.T;
-        return reduce(+, C);
-    }"
+func TriangleCount(graph: Matrix<s1, s1, bool>) -> int {
+    L = tril(graph);
+    U = triu(graph);
+    // Lb used as hadamard product
+    C = Matrix<int>(graph.nrows, graph.ncols);
+    C<L> = cast<int>(L) * cast<int>(U.T);
+    return reduce(C);
+}
+"
 CALL TriangleCount()
 RETURN count
 """
@@ -168,4 +173,3 @@ for record in result:
 And run as `python3 bolt_triangle_count.py`.
 
 In the current release, only a subset of graphalg is supported.
-Important features such as loops are not yet available, and will be added in the coming releases.
