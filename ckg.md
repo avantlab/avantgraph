@@ -20,14 +20,10 @@ docker pull ghcr.io/avantlab/avantgraph:ckg
 Start an instance of the image you have just pulled:
 
 ```bash
-docker run -it --rm \
-    -p 127.0.0.1:7687:7687/tcp \
-    --privileged \
-    ghcr.io/avantlab/avantgraph:release-2024-01-31
+docker run -it --rm --privileged ghcr.io/avantlab/avantgraph:ckg
 ```
 
 This will open a shell inside the container.
-Port 7687 is exposed to allow sending queries from the host to the container.
 The `--privileged` flag is necessary for `io_uring` support.
 
 ## Extract the Graph
