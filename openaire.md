@@ -62,12 +62,9 @@ When you start the container, add an extra flag `-p 8888:8888` to expose the not
 docker run -it --rm --privileged -p 8888:8888 ghcr.io/avantlab/avantgraph:openaire-transport
 ```
 
-Then in the shell on the container, install jupyter notebook and start it:
+Then in the shell on the container, start AvantGraph in server mode together with Jupyter Notebook:
 
 ```bash
-sudo apt update
-sudo apt install jupyter-notebook python3-pandas
-
 # Start the AvantGraph server in the background.
 # We will connect to this from the notebook.
 ag-server ag/ --listen :7687 &
@@ -96,6 +93,114 @@ query = """
     // NOTE: Exists only in the transport dataset.
     WHERE p.id = "doi_________::1a8de608ebacf2f4732134ce9f9580f1"
     RETURN cited.id, cited.mainTitle;
+"""
+
+# Produces a pandas dataframe with the results, which the notebook turns into a nice table.
+driver.execute_query(query, result_transformer_=Result.to_df)
+```
+
+## Querying DOIs
+DOIs are modeled as special nodes in the graph, with connections to the associated research products.
+OpenAIRE research products can have multiple associated DOIs, and in rare cases two products can have the same DOI.
+DOI lookup works in both directions: You can search for research products by DOI, or look up the DOI for a known entity.
+We can modify the example above to find the DOI of the paper rather than its neighbours in the citation graph:
+
+```python
+query = """
+    MATCH (p:result)<-[:doi]-(d:doi)
+    // NOTE: Exists only in the transport dataset.
+    WHERE p.id = "doi_________::1a8de608ebacf2f4732134ce9f9580f1"
+    RETURN d.doi;
+"""
+
+# Format results as DOI
+records, _, _ = driver.execute_query(query)
+for record in records:
+    print("https://doi.org/" + record[0])
+```
+
+Or, if you know the DOI but don't know the canonical ID in OpenAIRE:
+
+```python
+# Look up paper with DOI https://doi.org/10.3141/1780-10
+query = """
+    MATCH (d:doi)-[:doi]->(p:result)
+    WHERE d.doi = "10.3141/1780-10"
+    RETURN p.id, p.mainTitle;
+"""
+
+# Produces a pandas dataframe with the results, which the notebook turns into a nice table.
+driver.execute_query(query, result_transformer_=Result.to_df)
+```
+
+## Run a Graph Algorithm
+> Graph Algorithm support is currently included as a preview, it is not stable yet.
+> You may encounter performance issues with some algorithms as a result.
+> Documentation on the algorithm language will come in a future release.
+> In the meantime, if you would like to run custom algorithms in AvantGraph, contact us :)
+
+AvantGraph includes support for user-provided graph algorithms written in the *GraphAlg* language.
+To run a custom algorithm, include it in a Cypher query using the `WITH ALGORITHM` clause:
+
+```cypher
+WITH ALGORITHM "
+func MyAlgorithm(graph: Matrix<s, s, bool>) -> Vector<s, real> {
+    // Implementation goes here
+    // ...
+}
+"
+CALL MyAlgorithm()
+```
+
+Algorithm support is also available through the Jupyter Notebook interface.
+The example python script above can be modified as follows to run PageRank on the citation graph.
+
+```python
+# Run PageRank on the citation graph and extract the 10 highest scoring results.
+query = """
+WITH ALGORITHM "
+func withDamping(degree:int, damping:real) -> real {
+    return cast<real>(degree) / damping;
+}
+
+func PageRank(
+        graph: Matrix<s1, s1, bool>) -> Vector<s1, real> {
+    damping = real(0.85);
+    iterations = int(14);
+
+    n = graph.nrows;
+    teleport = (real(1.0) - damping) / cast<real>(n);
+    rdiff = real(1.0);
+
+    d_out = reduceRows(cast<int>(graph));
+
+    d = apply(withDamping, d_out, damping);
+
+    connected = reduceRows(graph);
+    sinks = Vector<bool>(n);
+    sinks<!connected>[:] = bool(true);
+
+    pr = Vector<real>(n);
+    pr[:] = real(1.0) / cast<real>(n);
+
+    for i in int(0):iterations {
+        sink_pr = Vector<real>(n);
+        sink_pr<sinks> = pr;
+        redist = (damping / cast<real>(n)) * reduce(sink_pr);
+
+        w = pr (./) d;
+
+        pr[:] = teleport + redist;
+        pr += cast<real>(graph).T * w;
+    }
+
+    return pr;
+}
+"
+CALL PageRank("result", "Cites")
+RETURN row.id AS id, val AS score
+ORDER BY val DESC
+LIMIT 10;
 """
 
 # Produces a pandas dataframe with the results, which the notebook turns into a nice table.
