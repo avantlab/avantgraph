@@ -10,12 +10,13 @@ Make sure you have [installed docker](https://docs.docker.com/engine/install/)
 and that the daemon is [running](https://docs.docker.com/config/daemon/start/).
 
 AvantGraph is published on our GitHub container registry.
-You can fetch an image preloaded with an OpenAIRE subgraph using the following 
+You can fetch an image preloaded with an OpenAIRE subgraph using the following
 command:
 
 ```bash
-# NOTE: This guide assumes the 'transport' version.
-docker pull ghcr.io/avantlab/avantgraph:openaire-transport
+# NOTE: This guide assumes the 'transport-ccam' version.
+docker pull ghcr.io/avantlab/avantgraph:openaire-transport-ccam
+docker pull ghcr.io/avantlab/avantgraph:openaire-transport-maritime
 docker pull ghcr.io/avantlab/avantgraph:openaire-cancer
 docker pull ghcr.io/avantlab/avantgraph:openaire-neuro
 docker pull ghcr.io/avantlab/avantgraph:openaire-energy
@@ -26,7 +27,7 @@ Start an instance of the image you have just pulled:
 
 ```bash
 # Replace 'transport' with a subgraph of your choice.
-docker run -it --rm --privileged ghcr.io/avantlab/avantgraph:openaire-transport
+docker run -it --rm --privileged ghcr.io/avantlab/avantgraph:openaire-transport-ccam
 ```
 
 This will open a shell inside the container.
@@ -51,7 +52,7 @@ Use the `avantgraph` binary to run the query.
 For example:
 
 ```bash
-avantgraph ag/ --query-type=cypher communities.cypher
+avantgraph ag/ --query-type=cypher cites.cypher
 ```
 
 ## Jupyter Notebook
@@ -59,7 +60,7 @@ You can also interact with AvantGraph through a Jupyter Notebook instead of the 
 When you start the container, add an extra flag `-p 8888:8888` to expose the notebook server port to the host:
 
 ```bash
-docker run -it --rm --privileged -p 8888:8888 ghcr.io/avantlab/avantgraph:openaire-transport
+docker run -it --rm --privileged -p 8888:8888 ghcr.io/avantlab/avantgraph:openaire-transport-ccam
 ```
 
 Then in the shell on the container, start AvantGraph in server mode together with Jupyter Notebook:
@@ -89,44 +90,10 @@ Then you can use `driver` in following cells to runs queries and perform your an
 ```python
 # All publications etc. citing a specific paper
 query = """
-    MATCH (p:result)-[:Cites]->(cited:result)
-    // NOTE: Exists only in the transport dataset.
-    WHERE p.id = "doi_________::1a8de608ebacf2f4732134ce9f9580f1"
-    RETURN cited.id, cited.mainTitle;
-"""
-
-# Produces a pandas dataframe with the results, which the notebook turns into a nice table.
-driver.execute_query(query, result_transformer_=Result.to_df)
-```
-
-## Querying DOIs
-DOIs are modeled as special nodes in the graph, with connections to the associated research products.
-OpenAIRE research products can have multiple associated DOIs, and in rare cases two products can have the same DOI.
-DOI lookup works in both directions: You can search for research products by DOI, or look up the DOI for a known entity.
-We can modify the example above to find the DOI of the paper rather than its neighbours in the citation graph:
-
-```python
-query = """
-    MATCH (p:result)<-[:doi]-(d:doi)
-    // NOTE: Exists only in the transport dataset.
-    WHERE p.id = "doi_________::1a8de608ebacf2f4732134ce9f9580f1"
-    RETURN d.doi;
-"""
-
-# Format results as DOI
-records, _, _ = driver.execute_query(query)
-for record in records:
-    print("https://doi.org/" + record[0])
-```
-
-Or, if you know the DOI but don't know the canonical ID in OpenAIRE:
-
-```python
-# Look up paper with DOI https://doi.org/10.3141/1780-10
-query = """
-    MATCH (d:doi)-[:doi]->(p:result)
-    WHERE d.doi = "10.3141/1780-10"
-    RETURN p.id, p.mainTitle;
+    MATCH (p:Product)-[:CITES]->(cited:Product)
+    // NOTE: Exists only in the transport-ccam dataset.
+    WHERE p.local_identifier = "https://explore.openaire.eu/search/result?id=doi_________::67b21832f097eaa8fcfc0165bc5faac4"
+    RETURN cited.local_identifier, cited.title
 """
 
 # Produces a pandas dataframe with the results, which the notebook turns into a nice table.
@@ -156,7 +123,7 @@ Algorithm support is also available through the Jupyter Notebook interface.
 The example python script above can be modified as follows to run PageRank on the citation graph.
 
 ```python
-# Run PageRank on the citation graph and extract the 10 highest scoring results.
+# Run PageRank on the citation graph
 query = """
 WITH ALGORITHM "
 func withDamping(degree:int, damping:real) -> real {
@@ -197,10 +164,8 @@ func PageRank(
     return pr;
 }
 "
-CALL PageRank("result", "Cites")
-RETURN row.id AS id, val AS score
-ORDER BY val DESC
-LIMIT 10;
+CALL PageRank("Product", "CITES")
+RETURN row.local_identifier AS id, val AS score
 """
 
 # Produces a pandas dataframe with the results, which the notebook turns into a nice table.
