@@ -539,3 +539,7 @@ avantgraph /tmp/pr --query-type=cypher /tmp/pr.cypher
 ```
 
 GraphAlg is available anywhere Cypher is allowed, including in queries sent over the Neo4J BOLT protocol to an AvantGraph server.
+
+## Acknowledgements
+
+This work was supported by the European Union's Horizon Europe research and innovation programme under grant agreement **No. 101058573** ([SciLake](https://scilake.eu/)).
