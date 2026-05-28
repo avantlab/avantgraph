@@ -1,0 +1,103 @@
+cff-version: 1.2.0
+message: "If you use AvantGraph, please cite it using the metadata below. The system is described in the VLDB 2022 demo paper; its query optimizer is described in the VLDB Journal 2025 paper."
+title: "AvantGraph"
+abstract: "AvantGraph is a high-performance property-graph processing engine developed at TU/e. It executes Cypher queries with native support for graph-shaped intermediate representations, factorised joins, multi-threaded loading, and zero-copy disk reads. AvantGraph integrates the GraphAlg algorithm language for in-database iterative analytics, and exposes a GraphQL-based Lake API. In SciLake it serves all five pilot Scientific Knowledge Graphs (Cancer, Neuroscience, Energy, Transport-CCAM, Transport-Maritime) backed by the full OpenAIRE Graph."
+type: software
+authors:
+  - family-names: "van Leeuwen"
+    given-names: "Wilco"
+    orcid: "https://orcid.org/0000-0003-0993-3408"
+    affiliation: "Eindhoven University of Technology"
+  - family-names: "Mulder"
+    given-names: "Thomas"
+    orcid: "https://orcid.org/0009-0002-5847-5941"
+    affiliation: "Eindhoven University of Technology"
+  - family-names: "van de Wall"
+    given-names: "Bram"
+    email: "a.a.g.v.d.wall@tue.nl"
+    orcid: "https://orcid.org/0009-0001-3066-863X"
+    affiliation: "Eindhoven University of Technology"
+  - family-names: "Brijder"
+    given-names: "Robert"
+    email: "r.brijder@tue.nl"
+    orcid: "https://orcid.org/0000-0002-8912-1735"
+    affiliation: "Eindhoven University of Technology"
+  - family-names: "de Graaf"
+    given-names: "Daan"
+    email: "d.j.a.d.graaf@tue.nl"
+    orcid: "https://orcid.org/0009-0000-0322-1149"
+    affiliation: "Eindhoven University of Technology"
+  - family-names: "Fletcher"
+    given-names: "George H. L."
+    email: "g.h.l.fletcher@tue.nl"
+    orcid: "https://orcid.org/0000-0003-2111-6769"
+    affiliation: "Eindhoven University of Technology"
+  - family-names: "Yakovets"
+    given-names: "Nikolay"
+    email: "hush@tue.nl"
+    orcid: "https://orcid.org/0000-0002-1488-1414"
+    affiliation: "Eindhoven University of Technology"
+license: CC-BY-4.0
+repository-code: "https://github.com/avantlab/avantgraph"
+keywords:
+  - graph database
+  - property graph
+  - Cypher
+  - query optimization
+  - factorisation
+  - OpenAIRE
+  - scientific knowledge graph
+references:
+  - type: conference-paper
+    title: "AvantGraph Query Processing Engine"
+    authors:
+      - family-names: "van Leeuwen"
+        given-names: "Wilco"
+      - family-names: "Mulder"
+        given-names: "Thomas"
+      - family-names: "van de Wall"
+        given-names: "Bram"
+      - family-names: "Fletcher"
+        given-names: "George H. L."
+        orcid: "https://orcid.org/0000-0003-2111-6769"
+      - family-names: "Yakovets"
+        given-names: "Nikolay"
+        orcid: "https://orcid.org/0000-0002-1488-1414"
+    journal: "Proceedings of the VLDB Endowment"
+    volume: 15
+    issue: 12
+    start: 3698
+    end: 3701
+    year: 2022
+    doi: "10.14778/3554821.3554878"
+  - type: article
+    title: "Optimizing navigational graph queries"
+    authors:
+      - family-names: "Mulder"
+        given-names: "Thomas"
+        orcid: "https://orcid.org/0009-0002-5847-5941"
+      - family-names: "Fletcher"
+        given-names: "George H. L."
+        orcid: "https://orcid.org/0000-0003-2111-6769"
+      - family-names: "Yakovets"
+        given-names: "Nikolay"
+        orcid: "https://orcid.org/0000-0002-1488-1414"
+    journal: "The VLDB Journal"
+    volume: 34
+    issue: 2
+    year: 2025
+    publisher:
+      name: "Springer"
+    doi: "10.1007/s00778-024-00892-7"
+  - type: generic
+    title: "Optimizing Navigational Graph Queries (arXiv preprint)"
+    authors:
+      - family-names: "Mulder"
+        given-names: "Thomas"
+      - family-names: "Fletcher"
+        given-names: "George H. L."
+      - family-names: "Yakovets"
+        given-names: "Nikolay"
+    year: 2024
+    doi: "10.48550/arXiv.2406.05417"
+    url: "https://arxiv.org/abs/2406.05417"
